@@ -22,15 +22,21 @@ def main():
 			fields = modified_line.split(',');
 			
 			# For the header, rename "Merchant Name" with Payee so it gets correctly imported into YNAB4.
-			if (fields[0] == "Date"):
+			bank = "";
+			if (fields[0] == "Date" or fields[0] == "Merchant Name"):
+				if (fields[0] == "Date"):
+					bank = "ROGERS"
+				if (fields[0] == "Merchant Name"):
+					bank = "PCFINANCIAL"
 				modified_line = modified_line.replace("Merchant Name", "Payee");
 				
 			# For transactions, convert the date from YYYY-MM-DD to MM/DD/YY.
 			else:
-				date = datetime.datetime.strptime(fields[0], '%Y-%m-%d').strftime('%m/%d/%y')
-				modified_line = modified_line.replace(fields[0], date);
+				if (bank == "ROGERS"):
+					date = datetime.datetime.strptime(fields[0], '%Y-%m-%d').strftime('%m/%d/%y')
+					modified_line = modified_line.replace(fields[0], date);
 				
-			# Rogers Bank incorrectly lists outflows as positive. Mark all outflow value as negative.
+			# CSV incorrectly lists outflows as positive. Mark all outflow value as negative.
 			outflow_list = re.findall("\d+\.\d+", modified_line);
 			
 			if (len(outflow_list) == 1):
