@@ -12,6 +12,7 @@ def main():
 		in_file = open(sys.argv[1], 'r');
 		out_file = open("output.csv", 'w');
 		
+		bank = "";
 		for line in in_file:
 			# print "Original Line:", line;
 			
@@ -22,11 +23,11 @@ def main():
 			fields = modified_line.split(',');
 			
 			# For the header, rename "Merchant Name" with Payee so it gets correctly imported into YNAB4.
-			bank = "";
+			
 			if (fields[0] == "Date" or fields[0] == "Merchant Name"):
 				if (fields[0] == "Date"):
 					bank = "ROGERS"
-				if (fields[0] == "Merchant Name"):
+				elif (fields[0] == "Merchant Name"):
 					bank = "PCFINANCIAL"
 				modified_line = modified_line.replace("Merchant Name", "Payee");
 				
@@ -36,13 +37,13 @@ def main():
 					date = datetime.datetime.strptime(fields[0], '%Y-%m-%d').strftime('%m/%d/%y')
 					modified_line = modified_line.replace(fields[0], date);
 				
-			# CSV incorrectly lists outflows as positive. Mark all outflow value as negative.
-			outflow_list = re.findall("\d+\.\d+", modified_line);
+				# CSV incorrectly lists outflows as positive. Mark all outflow value as negative.
+				outflow_list = re.findall("\d+\.\d+", modified_line);
 			
-			if (len(outflow_list) == 1):
-				outflow = outflow_list[0];
-				outflow_corrected = float(outflow) * -1;
-				outflow_corrected = "%.2f" % outflow_corrected;
+				if (len(outflow_list) == 1):
+					outflow = outflow_list[0];
+					outflow_corrected = float(outflow) * -1;
+					outflow_corrected = "%.2f" % outflow_corrected;
 				
 				modified_line = modified_line.replace(outflow, outflow_corrected);
 			
