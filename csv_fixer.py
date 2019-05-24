@@ -36,10 +36,15 @@ def main():
 				if (bank == "ROGERS"):
 					date = datetime.datetime.strptime(fields[0], '%Y-%m-%d').strftime('%m/%d/%y')
 					modified_line = modified_line.replace(fields[0], date);
+					
+				# Replace PAYMENT, THANK YOU with PAYMENT because ROGERS puts commas in CSV fields
+				# like idiots.
+				modified_line = modified_line.replace("PAYMENT, THANK YOU", "PAYMENT");
 				
 				# CSV incorrectly lists outflows as positive. Mark all outflow value as negative.
-				outflow_list = re.findall("\d+\.\d+", modified_line);
-			
+				outflow_list = re.findall("[+-]?\d+\.\d+", modified_line);
+				# print outflow_list
+				
 				if (len(outflow_list) == 1):
 					outflow = outflow_list[0];
 					outflow_corrected = float(outflow) * -1;
@@ -47,7 +52,7 @@ def main():
 				
 				modified_line = modified_line.replace(outflow, outflow_corrected);
 			
-			# print "Modified Line:", modified_line;
+			print "Modified Line:", modified_line;
 			out_file.write(modified_line);
 	
 		in_file.close();
