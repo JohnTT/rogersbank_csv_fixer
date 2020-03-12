@@ -14,22 +14,21 @@ def main():
 		
 		bank = "";
 		for line in in_file:
-			# print "Original Line:", line;
-			
 			# Delete instances of double quotations as this is not standard.
 			modified_line = line.replace('"', '');
 			
 			# Strip the individual fields out of the line.
 			fields = modified_line.split(',');
-			
+
 			# For the header, rename "Merchant Name" with Payee so it gets correctly imported into YNAB4.
-			
-			if (fields[0] == "Date" or fields[0] == "Merchant Name"):
-				if (fields[0] == "Date"):
-					bank = "ROGERS"
-				elif (fields[0] == "Merchant Name"):
-					bank = "PCFINANCIAL"
+			if (fields[0] == "Date"):
+				bank = "ROGERS"
+			elif (fields[0] == "Merchant Name"):
+				bank = "PCFINANCIAL"
 				modified_line = modified_line.replace("Merchant Name", "Payee");
+			elif (fields[0] == "Description"):
+				bank = "PCFINANCIAL2"
+				modified_line = modified_line.replace("Description", "Payee");
 				
 			# For transactions, convert the date from YYYY-MM-DD to MM/DD/YY.
 			else:
@@ -37,20 +36,17 @@ def main():
 					date = datetime.datetime.strptime(fields[0], '%Y-%m-%d').strftime('%m/%d/%y')
 					modified_line = modified_line.replace(fields[0], date);
 					
-				# Replace PAYMENT, THANK YOU with PAYMENT because ROGERS puts commas in CSV fields
-				# like idiots.
-				modified_line = modified_line.replace("PAYMENT, THANK YOU", "PAYMENT");
+					# Replace PAYMENT, THANK YOU with PAYMENT because ROGERS puts commas in CSV fields.
+					modified_line = modified_line.replace("PAYMENT, THANK YOU", "PAYMENT");
 				
 				# CSV incorrectly lists outflows as positive. Mark all outflow value as negative.
 				outflow_list = re.findall("[+-]?\d+\.\d+", modified_line);
-				# print outflow_list
 				
 				if (len(outflow_list) == 1):
 					outflow = outflow_list[0];
 					outflow_corrected = float(outflow) * -1;
 					outflow_corrected = "%.2f" % outflow_corrected;
-				
-				modified_line = modified_line.replace(outflow, outflow_corrected);
+					modified_line = modified_line.replace(outflow, outflow_corrected);
 			
 			print "Modified Line:", modified_line;
 			out_file.write(modified_line);
