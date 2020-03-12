@@ -1,3 +1,9 @@
+# Converts CSV files to a format understood by YNAB4. The
+# following banks are supported:
+#
+# 1) ROGERS Bank
+# 2) PC Financial
+
 import sys
 import re
 import datetime
@@ -59,5 +65,5 @@ def main():
 	except:
 		print "Could not open file", sys.argv[1];
 	
-	
+
 main()
