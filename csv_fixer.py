@@ -29,6 +29,7 @@ def main():
 			# For the header, rename "Merchant Name" with Payee so it gets correctly imported into YNAB4.
 			if (fields[0] == "Date"):
 				bank = "ROGERS"
+				modified_line = modified_line.replace("Merchant Name", "Payee");
 			elif (fields[0] == "Merchant Name"):
 				bank = "PCFINANCIAL"
 				modified_line = modified_line.replace("Merchant Name", "Payee");
